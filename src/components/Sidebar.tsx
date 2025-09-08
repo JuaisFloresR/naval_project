@@ -2,11 +2,10 @@
 
 import { Users, Home, Settings, BarChart3, Menu, X, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useSidebar } from '@/contexts/SidebarContext';
 
 interface SidebarProps {
   className?: string;
-  isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
 }
 
 const navigation = [
@@ -16,7 +15,8 @@ const navigation = [
   { name: 'Settings', icon: Settings, href: '/settings', current: false },
 ];
 
-export default function Sidebar({ className, isOpen, setIsOpen }: SidebarProps) {
+export default function Sidebar({ className }: SidebarProps) {
+  const { isOpen, setIsOpen } = useSidebar();
 
   return (
     <>

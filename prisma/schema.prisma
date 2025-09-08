@@ -14,22 +14,91 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model Ship {
-  id        String   @id @default(uuid())
+  id        String      @id @default(uuid())
   name      String
   type      String
-  builtYear Int
-  status    String   @default("active") // e.g. active, retired, under_repair
+  length    Decimal     @db.Decimal(8,2)
+  status    String  @default("ACTIVE")
+  createdAt DateTime    @default(now())
+
+  parts     Part[]
+  rows      RowShip[]
+}
+
+/// Possible statuses for a Ship
+enum ShipStatus {
+  ACTIVE
+  RETIRED
+  UNDER_REPAIR
+}
+
+model RowShip {
+  id        String   @id @default(uuid())
+  /// Measurement 1 (define actual meaning)
+  value1    Decimal
+  /// Measurement 2
+  value2    Decimal
+  /// Measurement 3
+  value3    Decimal
+  /// Measurement 4
+  value4    Decimal
+  /// Measurement 5
+  value5    Decimal
+  /// Measurement 6
+  value6    Decimal
+  /// Measurement 7
+  value7    Decimal
+  /// Measurement 8
+  value8    Decimal
+  /// Measurement 9
+  value9    Decimal
+  /// Measurement 10
+  value10   Decimal
+  /// Measurement 11
+  value11   Decimal
+
   createdAt DateTime @default(now())
-  parts Parts[]
-
-  
+  shipId    String
+  ship      Ship     @relation(fields: [shipId], references: [id])
 }
 
-model Parts {
-  id     String @id @default(uuid())
-  name   String
-  shipId String      // foreign key
-  ship   Ship @relation(fields: [shipId], references: [id])
+model Part {
+  id        String   @id @default(uuid())
+  name      String
+  shipId    String
+  ship      Ship     @relation(fields: [shipId], references: [id])
+  rows      RowPart[]
 }
+
+model RowPart {
+  id        String   @id @default(uuid())
+  /// Measurement 1 (define actual meaning)
+  value1    Decimal
+  /// Measurement 2
+  value2    Decimal
+  /// Measurement 3
+  value3    Decimal
+  /// Measurement 4
+  value4    Decimal
+  /// Measurement 5
+  value5    Decimal
+  /// Measurement 6
+  value6    Decimal
+  /// Measurement 7
+  value7    Decimal
+  /// Measurement 8
+  value8    Decimal
+  /// Measurement 9
+  value9    Decimal
+  /// Measurement 10
+  value10   Decimal
+  /// Measurement 11
+  value11   Decimal
+
+  createdAt DateTime @default(now())
+  partId    String
+  part      Part     @relation(fields: [partId], references: [id])
+}
+
+
