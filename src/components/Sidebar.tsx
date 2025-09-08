@@ -11,7 +11,7 @@ interface SidebarProps {
 const navigation = [
   { name: 'Dashboard', icon: Home, href: '/', current: true },
   { name: 'Users', icon: Users, href: '/users', current: false },
-  { name: 'Analytics', icon: BarChart3, href: '/analytics', current: false },
+  { name: 'Ships', icon: BarChart3, href: '/ships', current: false },
   { name: 'Settings', icon: Settings, href: '/settings', current: false },
 ];
 

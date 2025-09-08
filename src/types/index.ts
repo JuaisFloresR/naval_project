@@ -14,3 +14,16 @@ export interface FormData {
   role: string;
   department: string;
 }
+
+export interface Ship {
+  id: string;
+  name: string;
+  type: string;
+  yearBuilt: number;
+}
+
+export interface ShipFormData {
+  name: string;
+  type: string;
+  yearBuilt: number;
+}
