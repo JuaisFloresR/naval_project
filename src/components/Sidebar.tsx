@@ -3,20 +3,23 @@
 import { Users, Home, Settings, BarChart3, Menu, X, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useSidebar } from '@/contexts/SidebarContext';
+import Link from 'next/link';
+import { usePathname } from "next/navigation";
 
 interface SidebarProps {
   className?: string;
 }
 
 const navigation = [
-  { name: 'Dashboard', icon: Home, href: '/', current: true },
-  { name: 'Users', icon: Users, href: '/users', current: false },
-  { name: 'Ships', icon: BarChart3, href: '/ships', current: false },
-  { name: 'Settings', icon: Settings, href: '/settings', current: false },
+  { name: "Dashboard", icon: Home, href: "/" },
+  { name: "Users", icon: Users, href: "/users" },
+  { name: "Ships", icon: BarChart3, href: "/ships" },
+  { name: "Settings", icon: Settings, href: "/settings" },
 ];
 
 export default function Sidebar({ className }: SidebarProps) {
   const { isOpen, setIsOpen } = useSidebar();
+  const pathname = usePathname();
 
   return (
     <>
@@ -33,7 +36,7 @@ export default function Sidebar({ className }: SidebarProps) {
       {/* Mobile overlay */}
       {isOpen && (
         <div
-          className="lg:hidden fixed inset-0 z-40 bg-black bg-opacity-50"
+          className="lg:hidden fixed inset-0 z-40 bg-black/50"
           onClick={() => setIsOpen(false)}
         />
       )}
@@ -58,20 +61,24 @@ export default function Sidebar({ className }: SidebarProps) {
           <nav className="flex-1 px-4 py-6 space-y-2">
             {navigation.map((item) => {
               const Icon = item.icon;
+              const isActive =
+                item.href === "/"
+                  ? pathname === "/" // homepage must match exactly
+                  : pathname.startsWith(item.href);
               return (
-                <a
+                <Link
                   key={item.name}
                   href={item.href}
                   className={cn(
-                    'flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors',
-                    item.current
-                      ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                    "flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors",
+                    isActive
+                      ? "bg-blue-50 text-blue-700 border border-blue-200"
+                      : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                   )}
                 >
                   <Icon className="h-5 w-5 mr-3" />
                   {item.name}
-                </a>
+                </Link>
               );
             })}
           </nav>
