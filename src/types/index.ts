@@ -19,13 +19,24 @@ export interface Ship {
   id: string;
   name: string;
   type: string;
-  yearBuilt: number;
+  length: number;
+  width: number;
+  height: number;
+  description: string;
+  status: 'ACTIVE' | 'RETIRED' | 'UNDER_REPAIR';
+  createdAt: Date;
 }
+
+export type ShipStatus = 'ACTIVE' | 'RETIRED' | 'UNDER_REPAIR';
 
 export interface ShipFormData {
   name: string;
   type: string;
-  yearBuilt: number;
+  length: number;
+  width: number;
+  height: number;
+  description?: string;
+  status?: ShipStatus;
   rows?: RowShip[];
 }
 

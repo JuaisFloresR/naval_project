@@ -18,7 +18,10 @@ model Ship {
   id        String      @id @default(uuid())
   name      String
   type      String
-  length    Decimal     @db.Decimal(8,2)
+  length    Decimal     @db.Decimal(10,2)
+  width    Decimal     @db.Decimal(10,2)
+  height    Decimal     @db.Decimal(10,2)
+  description String
   status    String  @default("ACTIVE")
   createdAt DateTime    @default(now())
 

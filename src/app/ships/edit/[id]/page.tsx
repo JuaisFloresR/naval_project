@@ -4,9 +4,17 @@ import { useParams, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import ShipForm from '@/components/ShipForm';
 import { RowShipTable } from '@/components/RowShipTable';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Ship, ShipFormData, RowShip, RowShipFormData } from '@/types';
+import { Ship, ShipFormData, RowShip, RowShipFormData, ShipStatus } from '@/types';
 
 // Sample ship data (same as in the list page)
 const sampleShips: Ship[] = [
@@ -14,25 +22,45 @@ const sampleShips: Ship[] = [
     id: '1',
     name: 'HMS Victory',
     type: 'Battleship',
-    yearBuilt: 1765,
+    length: 69.6,
+    width: 15.8,
+    height: 20.5,
+    description: 'Historic British warship famous for the Battle of Trafalgar.',
+    status: 'RETIRED',
+    createdAt: new Date('1765-05-07'),
   },
   {
     id: '2',
     name: 'USS Enterprise',
     type: 'Aircraft Carrier',
-    yearBuilt: 1961,
+    length: 342.0,
+    width: 78.0,
+    height: 76.0,
+    description: 'The world\'s first nuclear-powered aircraft carrier.',
+    status: 'RETIRED',
+    createdAt: new Date('1961-11-25'),
   },
   {
     id: '3',
     name: 'Queen Mary 2',
     type: 'Cruise Ship',
-    yearBuilt: 2004,
+    length: 345.0,
+    width: 45.0,
+    height: 72.0,
+    description: 'Transatlantic ocean liner and cruise ship.',
+    status: 'ACTIVE',
+    createdAt: new Date('2004-01-12'),
   },
   {
     id: '4',
     name: 'Ever Given',
     type: 'Container Ship',
-    yearBuilt: 2018,
+    length: 400.0,
+    width: 59.0,
+    height: 32.9,
+    description: 'Container ship that blocked the Suez Canal in 2021.',
+    status: 'ACTIVE',
+    createdAt: new Date('2018-07-01'),
   },
 ];
 
@@ -42,6 +70,9 @@ export default function EditShipPage() {
   const [ship, setShip] = useState<Ship | null>(null);
   const [rows, setRows] = useState<RowShip[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [showError, setShowError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     // Simulate fetching ship data and its rows
@@ -91,20 +122,33 @@ export default function EditShipPage() {
     }, 300);
   }, [params.id]);
 
-  const handleSubmit = (data: ShipFormData) => {
+  const handleSubmit = async (data: ShipFormData) => {
     // Include rows in the form data
     const shipData = {
       ...data,
       rows: rows,
     };
 
-    // Placeholder for backend integration
-    console.log('Updating ship:', { id: params.id, ...shipData });
+    // Placeholder for backend integration - replace with actual Prisma update
+    // e.g., await prisma.ship.update({ where: { id: params.id }, data: shipData });
 
-    // Simulate API call delay
-    setTimeout(() => {
-      router.push('/ships');
-    }, 500);
+    try {
+      // Simulate API call
+      await new Promise((resolve, reject) => {
+        setTimeout(() => {
+          if (Math.random() > 0.1) { // 90% success rate for demo
+            resolve('Ship updated successfully');
+          } else {
+            reject(new Error('Failed to update ship. Please try again.'));
+          }
+        }, 1000);
+      });
+
+      setShowSuccess(true);
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : 'An unexpected error occurred');
+      setShowError(true);
+    }
   };
 
   const handleAddRow = (rowData: RowShipFormData) => {
@@ -185,7 +229,11 @@ export default function EditShipPage() {
           initialData={{
             name: ship.name,
             type: ship.type,
-            yearBuilt: ship.yearBuilt,
+            length: ship.length,
+            width: ship.width,
+            height: ship.height,
+            description: ship.description,
+            status: ship.status,
           }}
           onSubmit={handleSubmit}
           isEditing={true}
@@ -211,6 +259,32 @@ export default function EditShipPage() {
         </Card>
         </div>
       </div>
+
+      {/* Success Modal */}
+      <Dialog open={showSuccess} onOpenChange={setShowSuccess}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Success!</DialogTitle>
+            <DialogDescription>Ship updated successfully.</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button onClick={() => router.push('/ships')}>Go to Ships</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Error Modal */}
+      <Dialog open={showError} onOpenChange={setShowError}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Error</DialogTitle>
+            <DialogDescription>{errorMessage}</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowError(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

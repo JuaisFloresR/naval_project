@@ -4,27 +4,52 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import ShipForm from '@/components/ShipForm';
 import { RowShipTable } from '@/components/RowShipTable';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ShipFormData, RowShip, RowShipFormData } from '@/types';
 
 export default function CreateShipPage() {
   const router = useRouter();
   const [rows, setRows] = useState<RowShip[]>([]);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [showError, setShowError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const handleSubmit = (data: ShipFormData) => {
+  const handleSubmit = async (data: ShipFormData) => {
     // Include rows in the form data
     const shipData = {
       ...data,
       rows: rows,
     };
 
-    // Placeholder for backend integration
-    console.log('Creating ship:', shipData);
+    // Placeholder for backend integration - replace with actual Prisma create
+    // e.g., await prisma.ship.create({ data: shipData });
 
-    // Simulate API call delay
-    setTimeout(() => {
-      router.push('/ships');
-    }, 500);
+    try {
+      // Simulate API call
+      await new Promise((resolve, reject) => {
+        setTimeout(() => {
+          if (Math.random() > 0.1) { // 90% success rate for demo
+            resolve('Ship created successfully');
+          } else {
+            reject(new Error('Failed to create ship. Please try again.'));
+          }
+        }, 1000);
+      });
+
+      setShowSuccess(true);
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : 'An unexpected error occurred');
+      setShowError(true);
+    }
   };
 
   const handleAddRow = (rowData: RowShipFormData) => {
@@ -92,6 +117,32 @@ export default function CreateShipPage() {
         </Card>
         </div>
       </div>
+
+      {/* Success Modal */}
+      <Dialog open={showSuccess} onOpenChange={setShowSuccess}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Success!</DialogTitle>
+            <DialogDescription>Ship created successfully.</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button onClick={() => router.push('/ships')}>Go to Ships</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Error Modal */}
+      <Dialog open={showError} onOpenChange={setShowError}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Error</DialogTitle>
+            <DialogDescription>{errorMessage}</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowError(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
