@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ShipFormData } from '@/types';
+import { ShipFormData, ShipStatus } from '@/types';
 
 interface ShipFormProps {
   initialData?: ShipFormData;
@@ -174,7 +174,7 @@ export default function ShipForm({ initialData, onSubmit, isEditing = false }: S
               <Label htmlFor="status" className="text-sm font-medium text-gray-700">
                 Status <span className="text-red-500">*</span>
               </Label>
-              <Select value={statusValue} onValueChange={(value) => setValue('status', value)}>
+              <Select value={statusValue} onValueChange={(value) => setValue('status', value as ShipStatus)}>
                 <SelectTrigger className="h-11 sm:h-10 text-base transition-all duration-200 focus:ring-2 focus:ring-blue-500 border-gray-300">
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>

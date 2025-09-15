@@ -38,6 +38,7 @@ export interface ShipFormData {
   height: number;
   description?: string;
   status?: ShipStatus;
+  yearBuilt?: number;
   rows?: RowShip[];
 }
 
