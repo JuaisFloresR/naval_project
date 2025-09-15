@@ -25,6 +25,7 @@ export interface Ship {
   description: string;
   status: 'ACTIVE' | 'RETIRED' | 'UNDER_REPAIR';
   createdAt: Date;
+  yearBuilt?: number; 
 }
 
 export type ShipStatus = 'ACTIVE' | 'RETIRED' | 'UNDER_REPAIR';
