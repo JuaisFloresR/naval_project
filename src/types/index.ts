@@ -1,3 +1,4 @@
+// Existing content
 export interface User {
   id: string;
   name: string;
@@ -60,6 +61,53 @@ export interface RowShip {
 }
 
 export interface RowShipFormData {
+  value1: number;
+  value2: number;
+  value3: number;
+  value4: number;
+  value5: number;
+  value6: number;
+  value7: number;
+  value8: number;
+  value9: number;
+  value10: number;
+  value11: number;
+}
+
+// New types for Part
+export interface Part {
+  id: string;
+  name: string;
+  description: string;
+  shipId: string;
+  createdAt?: Date;
+}
+
+export interface PartFormData {
+  name: string;
+  description?: string;
+  shipId: string;
+  rows?: RowPart[];
+}
+
+export interface RowPart {
+  id: string;
+  value1: number;
+  value2: number;
+  value3: number;
+  value4: number;
+  value5: number;
+  value6: number;
+  value7: number;
+  value8: number;
+  value9: number;
+  value10: number;
+  value11: number;
+  createdAt: Date;
+  partId?: string;
+}
+
+export interface RowPartFormData {
   value1: number;
   value2: number;
   value3: number;
