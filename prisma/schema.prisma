@@ -69,6 +69,7 @@ model RowShip {
 model Part {
   id        String   @id @default(uuid())
   name      String
+  description String
   shipId    String
   ship      Ship     @relation(fields: [shipId], references: [id])
   rows      RowPart[]
