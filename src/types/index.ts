@@ -99,10 +99,6 @@ export interface RowPart {
   value5: number;
   value6: number;
   value7: number;
-  value8: number;
-  value9: number;
-  value10: number;
-  value11: number;
   createdAt: Date;
   partId?: string;
 }
@@ -115,8 +111,4 @@ export interface RowPartFormData {
   value5: number;
   value6: number;
   value7: number;
-  value8: number;
-  value9: number;
-  value10: number;
-  value11: number;
 }

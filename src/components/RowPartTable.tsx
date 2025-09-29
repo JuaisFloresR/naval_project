@@ -55,7 +55,7 @@ export function RowPartTable({ data, onAdd, onUpdate, onDelete, onImport }: RowP
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [newRow, setNewRow] = useState<RowPartFormData>({
     value1: 0, value2: 0, value3: 0, value4: 0, value5: 0,
-    value6: 0, value7: 0, value8: 0, value9: 0, value10: 0, value11: 0
+    value6: 0, value7: 0
   });
   const [isImporting, setIsImporting] = useState(false);
   const [importError, setImportError] = useState<string | null>(null);
@@ -113,10 +113,6 @@ export function RowPartTable({ data, onAdd, onUpdate, onDelete, onImport }: RowP
       value5: row.value5,
       value6: row.value6,
       value7: row.value7,
-      value8: row.value8,
-      value9: row.value9,
-      value10: row.value10,
-      value11: row.value11,
     });
   };
 
@@ -144,7 +140,7 @@ export function RowPartTable({ data, onAdd, onUpdate, onDelete, onImport }: RowP
     onAdd(newRow);
     setNewRow({
       value1: 0, value2: 0, value3: 0, value4: 0, value5: 0,
-      value6: 0, value7: 0, value8: 0, value9: 0, value10: 0, value11: 0
+      value6: 0, value7: 0
     });
     setIsAddModalOpen(false);
   };
@@ -206,10 +202,6 @@ export function RowPartTable({ data, onAdd, onUpdate, onDelete, onImport }: RowP
         value5: parseFloat(row['Value 5'] || row.value5 || '0') || 0,
         value6: parseFloat(row['Value 6'] || row.value6 || '0') || 0,
         value7: parseFloat(row['Value 7'] || row.value7 || '0') || 0,
-        value8: parseFloat(row['Value 8'] || row.value8 || '0') || 0,
-        value9: parseFloat(row['Value 9'] || row.value9 || '0') || 0,
-        value10: parseFloat(row['Value 10'] || row.value10 || '0') || 0,
-        value11: parseFloat(row['Value 11'] || row.value11 || '0') || 0,
       }));
 
       onImport(rows);
@@ -238,10 +230,6 @@ export function RowPartTable({ data, onAdd, onUpdate, onDelete, onImport }: RowP
       { header: 'Value 5', key: 'value5', width: 10 },
       { header: 'Value 6', key: 'value6', width: 10 },
       { header: 'Value 7', key: 'value7', width: 10 },
-      { header: 'Value 8', key: 'value8', width: 10 },
-      { header: 'Value 9', key: 'value9', width: 10 },
-      { header: 'Value 10', key: 'value10', width: 10 },
-      { header: 'Value 11', key: 'value11', width: 10 },
       { header: 'Created At', key: 'createdAt', width: 20 },
     ];
 
@@ -256,10 +244,6 @@ export function RowPartTable({ data, onAdd, onUpdate, onDelete, onImport }: RowP
         value5: row.value5,
         value6: row.value6,
         value7: row.value7,
-        value8: row.value8,
-        value9: row.value9,
-        value10: row.value10,
-        value11: row.value11,
         createdAt: row.createdAt.toISOString(),
       });
     });
@@ -367,7 +351,7 @@ export function RowPartTable({ data, onAdd, onUpdate, onDelete, onImport }: RowP
                       {getSortIcon('id')}
                     </Button>
                   </TableHead>
-                  {Array.from({ length: 11 }, (_, i) => (
+                  {Array.from({ length: 7 }, (_, i) => (
                     <TableHead key={i} className="font-semibold text-gray-900 text-center py-4 px-2 lg:px-3">
                       <Button
                         variant="ghost"
@@ -406,18 +390,6 @@ export function RowPartTable({ data, onAdd, onUpdate, onDelete, onImport }: RowP
                     </TableCell>
                     <TableCell className="text-center py-4 px-3">
                       {renderEditableCell('value7', row.value7, row.id)}
-                    </TableCell>
-                    <TableCell className="text-center py-4 px-3">
-                      {renderEditableCell('value8', row.value8, row.id)}
-                    </TableCell>
-                    <TableCell className="text-center py-4 px-3">
-                      {renderEditableCell('value9', row.value9, row.id)}
-                    </TableCell>
-                    <TableCell className="text-center py-4 px-3">
-                      {renderEditableCell('value10', row.value10, row.id)}
-                    </TableCell>
-                    <TableCell className="text-center py-4 px-3">
-                      {renderEditableCell('value11', row.value11, row.id)}
                     </TableCell>
                     <TableCell className="text-right py-4 px-6">
                       {editingId === row.id ? (
@@ -479,7 +451,7 @@ export function RowPartTable({ data, onAdd, onUpdate, onDelete, onImport }: RowP
                     </Button>
                   </TableHead>
                   <TableHead className="font-semibold text-gray-900 text-center py-3 px-2">Values 1-6</TableHead>
-                  <TableHead className="font-semibold text-gray-900 text-center py-3 px-2">Values 7-11</TableHead>
+                  <TableHead className="font-semibold text-gray-900 text-center py-3 px-2">Value 7</TableHead>
                   <TableHead className="text-right font-semibold text-gray-900 py-3 px-3">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -502,17 +474,9 @@ export function RowPartTable({ data, onAdd, onUpdate, onDelete, onImport }: RowP
                       </div>
                     </TableCell>
                     <TableCell className="py-3 px-2">
-                      <div className="grid grid-cols-3 gap-1 text-xs">
-                        {Array.from({ length: 5 }, (_, i) => {
-                          const valueKey = `value${i + 7}` as keyof RowPart;
-                          const value = row[valueKey] as number;
-                          return (
-                            <div key={i} className="text-center p-1 bg-gray-50 rounded">
-                              <span className="text-gray-600">V{i + 7}:</span>
-                              <span className="font-medium ml-1">{value.toFixed(1)}</span>
-                            </div>
-                          );
-                        })}
+                      <div className="text-center p-2 bg-gray-50 rounded">
+                        <span className="text-gray-600 text-xs">V7:</span>
+                        <span className="font-medium ml-1">{row.value7.toFixed(1)}</span>
                       </div>
                     </TableCell>
                     <TableCell className="text-right py-3 px-3">
@@ -594,7 +558,7 @@ export function RowPartTable({ data, onAdd, onUpdate, onDelete, onImport }: RowP
               {editingId === row.id && editValues ? (
                 <div className="space-y-4 mb-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {Array.from({ length: 11 }, (_, i) => (
+                    {Array.from({ length: 7 }, (_, i) => (
                       <div key={i} className="space-y-2">
                         <Label className="text-xs sm:text-sm font-medium text-gray-700">Value {i + 1}</Label>
                         <Input
@@ -630,7 +594,7 @@ export function RowPartTable({ data, onAdd, onUpdate, onDelete, onImport }: RowP
                 </div>
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 text-sm">
-                  {Array.from({ length: 11 }, (_, i) => {
+                  {Array.from({ length: 7 }, (_, i) => {
                     const valueKey = `value${i + 1}` as keyof RowPart;
                     const value = row[valueKey] as number;
                     return (
@@ -673,7 +637,7 @@ export function RowPartTable({ data, onAdd, onUpdate, onDelete, onImport }: RowP
             <DialogTitle className="text-lg sm:text-xl font-semibold text-gray-900">Add New Measurement Row</DialogTitle>
           </DialogHeader>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 py-4 sm:py-6">
-            {Array.from({ length: 11 }, (_, i) => (
+            {Array.from({ length: 7 }, (_, i) => (
               <div key={i} className="space-y-2 sm:space-y-3">
                 <Label htmlFor={`value${i + 1}`} className="text-sm font-medium text-gray-700">
                   Value {i + 1}

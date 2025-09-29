@@ -91,14 +91,6 @@ model RowPart {
   value6    Decimal
   /// Measurement 7
   value7    Decimal
-  /// Measurement 8
-  value8    Decimal
-  /// Measurement 9
-  value9    Decimal
-  /// Measurement 10
-  value10   Decimal
-  /// Measurement 11
-  value11   Decimal
 
   createdAt DateTime @default(now())
   partId    String
