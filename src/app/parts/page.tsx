@@ -53,7 +53,7 @@ export default function PartsPage() {
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Parts Management</h1>
+              <h1 className="lg:text-3xl text-2xl font-bold text-gray-900">Parts Management</h1>
               <p className="mt-2 text-gray-600">
                 Manage your inventory of ship parts and components
               </p>

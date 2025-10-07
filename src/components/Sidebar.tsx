@@ -1,6 +1,6 @@
 'use client';
 
-import { Users, Home, Settings, Ship,Component, Menu, X, User } from 'lucide-react';
+import { Users, Home, Settings, Ship, Component, Menu, X, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useSidebar } from '@/contexts/SidebarContext';
 import Link from 'next/link';
@@ -24,7 +24,7 @@ export default function Sidebar({ className }: SidebarProps) {
 
   return (
     <>
-      {/* Mobile menu button */}
+      {/* Botón de menú fijo (visible siempre) */}
       <div className="fixed top-4 left-4 z-50">
         <button
           onClick={() => setIsOpen(!isOpen)}
@@ -34,7 +34,7 @@ export default function Sidebar({ className }: SidebarProps) {
         </button>
       </div>
 
-      {/* Mobile overlay */}
+      {/* Overlay móvil */}
       {isOpen && (
         <div
           className="lg:hidden fixed inset-0 z-40 bg-black/50"
@@ -45,10 +45,12 @@ export default function Sidebar({ className }: SidebarProps) {
       {/* Sidebar */}
       <div
         className={cn(
-          'inset-y-0 left-0 z-40 w-64 bg-white border-r border-gray-200 transform transition-transform duration-300 ease-in-out',
-          isOpen 
-            ? 'fixed translate-x-0 lg:static lg:translate-x-0' 
-            : 'fixed -translate-x-full lg:fixed lg:-translate-x-full',
+          'fixed top-0 left-0 h-screen w-64 bg-white border-r border-gray-200 transform transition-transform duration-300 ease-in-out overflow-y-auto z-40'
+          //  ,
+          ,
+          isOpen
+            ? 'translate-x-0'
+            : '-translate-x-full',
           className
         )}
       >
@@ -58,13 +60,13 @@ export default function Sidebar({ className }: SidebarProps) {
             <h1 className="text-xl font-bold text-gray-900">Dashboard</h1>
           </div>
 
-          {/* Navigation */}
+          {/* Navegación */}
           <nav className="flex-1 px-4 py-6 space-y-2">
             {navigation.map((item) => {
               const Icon = item.icon;
               const isActive =
                 item.href === "/"
-                  ? pathname === "/" // homepage must match exactly
+                  ? pathname === "/"
                   : pathname.startsWith(item.href);
               return (
                 <Link
@@ -84,7 +86,7 @@ export default function Sidebar({ className }: SidebarProps) {
             })}
           </nav>
 
-          {/* User profile */}
+          {/* Perfil */}
           <div className="border-t border-gray-200 p-4">
             <div className="flex items-center space-x-3">
               <div className="flex-shrink-0">

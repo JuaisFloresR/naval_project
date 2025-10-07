@@ -73,7 +73,7 @@ export default function ShipsPage() {
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Ships Management</h1>
+              <h1 className="lg:text-3xl text-2xl font-bold text-gray-900">Ships Management</h1>
               <p className="mt-2 text-gray-600">
                 Manage your fleet and vessel information
               </p>
