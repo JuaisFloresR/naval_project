@@ -113,7 +113,7 @@ export async function exportToExcel<T extends { id: string; createdAt: Date }>(
   data: T[],
   columns: ColumnConfig[],
   filename: string,
-  additionalColumns?: { header: string; key: keyof T; width?: number }[]
+  additionalColumns?: { header: string; key: Extract<keyof T, string>; width?: number }[]
 ): Promise<void> {
   const workbook = new ExcelJS.Workbook();
   const worksheet = workbook.addWorksheet('Data');

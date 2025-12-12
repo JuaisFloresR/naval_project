@@ -61,6 +61,7 @@ export interface RowShip {
 }
 
 export interface RowShipFormData {
+  [key: string]: number;
   value1: number;
   value2: number;
   value3: number;
@@ -104,6 +105,7 @@ export interface RowPart {
 }
 
 export interface RowPartFormData {
+  [key: string]: number;
   value1: number;
   value2: number;
   value3: number;

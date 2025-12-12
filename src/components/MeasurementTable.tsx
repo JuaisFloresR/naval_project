@@ -127,7 +127,7 @@ export function MeasurementTable<TRow extends { id: string; createdAt: Date }, T
     setEditingId(row.id);
     const values = {} as TFormData;
     columns.forEach(col => {
-      (values as Record<string, number>)[col.key] = (row as Record<string, number>)[col.key];
+      (values as Record<string, number>)[col.key] = (row as Record<string, unknown>)[col.key] as number;
     });
     setEditValues(values);
   };
@@ -300,7 +300,7 @@ export function MeasurementTable<TRow extends { id: string; createdAt: Date }, T
                     <TableCell className="font-mono text-sm py-4 px-6 text-gray-700">{row.id}</TableCell>
                     {columns.map((col) => (
                       <TableCell key={col.key} className="text-center py-4 px-3">
-                        {renderEditableCell(col.key, (row as Record<string, number>)[col.key], row.id)}
+                        {renderEditableCell(col.key, (row as Record<string, unknown>)[col.key] as number, row.id)}
                       </TableCell>
                     ))}
                     <TableCell className="text-right py-4 px-6">
@@ -373,7 +373,7 @@ export function MeasurementTable<TRow extends { id: string; createdAt: Date }, T
                     <TableCell className="py-3 px-2">
                       <div className="grid grid-cols-3 gap-1 text-xs">
                         {columns.map((col) => {
-                          const value = (row as Record<string, number>)[col.key];
+                          const value = (row as Record<string, unknown>)[col.key] as number;
                           return (
                             <div key={col.key} className="text-center p-1 bg-gray-50 rounded">
                               <span className="text-gray-600">{col.label}:</span>
@@ -499,7 +499,7 @@ export function MeasurementTable<TRow extends { id: string; createdAt: Date }, T
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 text-sm">
                   {columns.map((col) => {
-                    const value = (row as Record<string, number>)[col.key];
+                    const value = (row as Record<string, unknown>)[col.key] as number;
                     return (
                       <div key={col.key} className="text-center p-2 sm:p-3 bg-gray-50 rounded-lg border border-gray-100">
                         <span className="text-xs text-gray-600 font-medium block">{col.label}</span>
