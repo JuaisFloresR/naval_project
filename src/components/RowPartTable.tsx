@@ -162,7 +162,9 @@ export function RowPartTable({ data, onAdd, onUpdate, onDelete, onImport }: RowP
         throw new Error('No worksheet found in the Excel file');
       }
 
-      const jsonData: any[] = [];
+      type RawExcelRow = Record<string, string>;
+      
+      const jsonData: RawExcelRow[] = [];
       const headers: string[] = [];
 
       // Get headers from first row
@@ -175,7 +177,7 @@ export function RowPartTable({ data, onAdd, onUpdate, onDelete, onImport }: RowP
       worksheet.eachRow((row, rowNumber) => {
         if (rowNumber === 1) return; // Skip header row
 
-        const rowData: any = {};
+        const rowData: RawExcelRow = {};
         row.eachCell((cell, colNumber) => {
           const header = headers[colNumber - 1];
           if (header) {
@@ -194,7 +196,7 @@ export function RowPartTable({ data, onAdd, onUpdate, onDelete, onImport }: RowP
       }
 
       // Convert to RowPartFormData format
-      const rows: RowPartFormData[] = jsonData.map((row: any) => ({
+      const rows: RowPartFormData[] = jsonData.map((row) => ({
         value1: parseFloat(row['Value 1'] || row.value1 || '0') || 0,
         value2: parseFloat(row['Value 2'] || row.value2 || '0') || 0,
         value3: parseFloat(row['Value 3'] || row.value3 || '0') || 0,

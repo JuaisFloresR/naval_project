@@ -178,7 +178,7 @@ export default function EditPartPage() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center py-12">
             <h1 className="text-2xl font-bold text-gray-900 mb-4">Part Not Found</h1>
-            <p className="text-gray-600 mb-6">The part you're looking for doesn't exist.</p>
+            <p className="text-gray-600 mb-6">The part you&apos;re looking for doesn&apos;t exist.</p>
             <Button onClick={() => router.push('/parts')}>
               Back to Parts
             </Button>

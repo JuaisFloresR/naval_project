@@ -166,7 +166,9 @@ export function RowShipTable({ data, onAdd, onUpdate, onDelete, onImport }: RowS
         throw new Error('No worksheet found in the Excel file');
       }
 
-      const jsonData: any[] = [];
+      type RawExcelRow = Record<string, string>;
+      
+      const jsonData: RawExcelRow[] = [];
       const headers: string[] = [];
 
       // Get headers from first row
@@ -179,7 +181,7 @@ export function RowShipTable({ data, onAdd, onUpdate, onDelete, onImport }: RowS
       worksheet.eachRow((row, rowNumber) => {
         if (rowNumber === 1) return; // Skip header row
 
-        const rowData: any = {};
+        const rowData: RawExcelRow = {};
         row.eachCell((cell, colNumber) => {
           const header = headers[colNumber - 1];
           if (header) {
@@ -198,7 +200,7 @@ export function RowShipTable({ data, onAdd, onUpdate, onDelete, onImport }: RowS
       }
 
       // Convert to RowShipFormData format
-      const rows: RowShipFormData[] = jsonData.map((row: any) => ({
+      const rows: RowShipFormData[] = jsonData.map((row) => ({
         value1: parseFloat(row['Value 1'] || row.value1 || '0') || 0,
         value2: parseFloat(row['Value 2'] || row.value2 || '0') || 0,
         value3: parseFloat(row['Value 3'] || row.value3 || '0') || 0,
