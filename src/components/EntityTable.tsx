@@ -293,11 +293,11 @@ export function EntityTable<T extends { id: string }>({
                     {column.sortable !== false ? (
                       <Button
                         variant="ghost"
-                        onClick={() => handleSort(String(column.key), column.sortable !== false)}
+                        onClick={() => handleSort(String(column.key), column.sortable ?? true)}
                         className="h-auto p-0 font-semibold text-gray-900 hover:bg-transparent -ml-4"
                       >
                         {column.header}
-                        {getSortIcon(String(column.key), column.sortable !== false)}
+                        {getSortIcon(String(column.key), column.sortable ?? true)}
                       </Button>
                     ) : (
                       column.header
