@@ -7,6 +7,7 @@ import { EntityTable, EntityColumnConfig, MobileFieldConfig } from './EntityTabl
 interface ShipTableProps {
   data: Ship[];
   onDelete: (id: string) => void;
+  isLoading?: boolean;
 }
 
 // Helper function for type badge colors
@@ -27,12 +28,14 @@ const columns: EntityColumnConfig<Ship>[] = [
   { 
     key: 'id', 
     header: 'ID',
-    className: 'font-mono text-sm'
+    className: 'font-mono text-sm',
+    sortable: true
   },
   { 
     key: 'name', 
     header: 'Name',
-    className: 'font-medium'
+    className: 'font-medium',
+    sortable: true
   },
   { 
     key: 'type', 
@@ -41,11 +44,13 @@ const columns: EntityColumnConfig<Ship>[] = [
       <Badge className={getTypeColor(ship.type)} variant="secondary">
         {ship.type}
       </Badge>
-    )
+    ),
+    sortable: true
   },
   { 
     key: 'yearBuilt', 
-    header: 'Year Built'
+    header: 'Year Built',
+    sortable: true
   },
 ];
 
@@ -65,7 +70,7 @@ const mobileFields: MobileFieldConfig<Ship>[] = [
   },
 ];
 
-export function ShipTable({ data, onDelete }: ShipTableProps) {
+export function ShipTable({ data, onDelete, isLoading }: ShipTableProps) {
   return (
     <EntityTable<Ship>
       data={data}
@@ -75,6 +80,8 @@ export function ShipTable({ data, onDelete }: ShipTableProps) {
       editBasePath="/ships"
       entityTypeName="Ship"
       emptyMessage="No ships found. Add some ships to get started!"
+      isLoading={isLoading}
+      searchPlaceholder="Search ships by name, type, or year..."
       onDelete={onDelete}
     />
   );

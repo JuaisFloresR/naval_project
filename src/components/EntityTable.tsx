@@ -1,8 +1,10 @@
 'use client';
 
-import { useState, ReactNode } from 'react';
+import { useState, useMemo, ReactNode } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Skeleton } from '@/components/ui/skeleton';
 import { 
   Table, 
   TableBody, 
@@ -27,7 +29,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { MoreHorizontal, Edit, Trash2 } from 'lucide-react';
+import { MoreHorizontal, Edit, Trash2, Search, ArrowUpDown, ArrowUp, ArrowDown, X } from 'lucide-react';
 
 // Column configuration for entity tables
 export interface EntityColumnConfig<T> {
@@ -37,6 +39,10 @@ export interface EntityColumnConfig<T> {
   render?: (row: T) => ReactNode;
   /** CSS classes for the cell */
   className?: string;
+  /** Enable sorting for this column (default: true) */
+  sortable?: boolean;
+  /** Custom function to get searchable text from this column */
+  getSearchText?: (row: T) => string;
 }
 
 // Configuration for mobile card fields
@@ -57,8 +63,15 @@ export interface EntityTableProps<T extends { id: string }> {
   entityTypeName: string;
   /** Empty state message */
   emptyMessage: string;
+  /** Show loading skeleton */
+  isLoading?: boolean;
+  /** Placeholder for search input */
+  searchPlaceholder?: string;
   onDelete: (id: string) => void;
 }
+
+type SortField = string | null;
+type SortDirection = 'asc' | 'desc' | null;
 
 export function EntityTable<T extends { id: string }>({
   data,
@@ -68,9 +81,14 @@ export function EntityTable<T extends { id: string }>({
   editBasePath,
   entityTypeName,
   emptyMessage,
+  isLoading = false,
+  searchPlaceholder = 'Search...',
   onDelete,
 }: EntityTableProps<T>) {
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortField, setSortField] = useState<SortField>(null);
+  const [sortDirection, setSortDirection] = useState<SortDirection>(null);
 
   const handleDeleteConfirm = () => {
     if (deleteId) {
@@ -78,6 +96,95 @@ export function EntityTable<T extends { id: string }>({
       setDeleteId(null);
     }
   };
+
+  const handleSort = (columnKey: string, sortable: boolean = true) => {
+    if (!sortable) return;
+
+    if (sortField === columnKey) {
+      if (sortDirection === 'asc') {
+        setSortDirection('desc');
+      } else if (sortDirection === 'desc') {
+        setSortField(null);
+        setSortDirection(null);
+      } else {
+        setSortDirection('asc');
+      }
+    } else {
+      setSortField(columnKey);
+      setSortDirection('asc');
+    }
+  };
+
+  const getSortIcon = (columnKey: string, sortable: boolean = true) => {
+    if (!sortable) return null;
+    if (sortField !== columnKey) return <ArrowUpDown className="ml-2 h-4 w-4 opacity-50" />;
+    if (sortDirection === 'asc') return <ArrowUp className="ml-2 h-4 w-4" />;
+    if (sortDirection === 'desc') return <ArrowDown className="ml-2 h-4 w-4" />;
+    return <ArrowUpDown className="ml-2 h-4 w-4 opacity-50" />;
+  };
+
+  // Get searchable text for a column
+  const getColumnSearchText = (row: T, column: EntityColumnConfig<T>): string => {
+    if (column.getSearchText) {
+      return column.getSearchText(row);
+    }
+    
+    if (column.render) {
+      // For rendered columns, try to extract text from the ReactNode
+      const rendered = column.render(row);
+      if (typeof rendered === 'string') return rendered;
+      if (typeof rendered === 'number') return String(rendered);
+      // For complex renders (like badges), fall back to the raw value
+      const value = (row as Record<string, unknown>)[column.key as string];
+      return value !== null && value !== undefined ? String(value) : '';
+    }
+    
+    const value = (row as Record<string, unknown>)[column.key as string];
+    return value !== null && value !== undefined ? String(value) : '';
+  };
+
+  // Filtered and sorted data
+  const processedData = useMemo(() => {
+    let result = [...data];
+
+    // Apply search filter across ALL columns
+    if (searchTerm) {
+      const lowerSearch = searchTerm.toLowerCase();
+      result = result.filter(row => {
+        return columns.some(column => {
+          const searchText = getColumnSearchText(row, column);
+          return searchText.toLowerCase().includes(lowerSearch);
+        });
+      });
+    }
+
+    // Apply sorting
+    if (sortField && sortDirection) {
+      result.sort((a, b) => {
+        const column = columns.find(col => String(col.key) === sortField);
+        if (!column) return 0;
+
+        // Use search text for comparison (includes rendered values)
+        const aText = getColumnSearchText(a, column);
+        const bText = getColumnSearchText(b, column);
+
+        // Try numeric comparison first
+        const aNum = parseFloat(aText);
+        const bNum = parseFloat(bText);
+        
+        if (!isNaN(aNum) && !isNaN(bNum)) {
+          return sortDirection === 'asc' ? aNum - bNum : bNum - aNum;
+        }
+
+        // Fall back to string comparison
+        return sortDirection === 'asc'
+          ? aText.localeCompare(bText)
+          : bText.localeCompare(aText);
+      });
+    }
+
+    return result;
+  }, [data, searchTerm, sortField, sortDirection, columns]);
 
   const renderCellValue = (row: T, column: EntityColumnConfig<T>): ReactNode => {
     if (column.render) {
@@ -87,8 +194,91 @@ export function EntityTable<T extends { id: string }>({
     return value !== undefined && value !== null ? String(value) : '';
   };
 
+  // Loading skeleton
+  if (isLoading) {
+    return (
+      <div className="w-full space-y-4">
+        {/* Search skeleton */}
+        <div className="flex items-center gap-2">
+          <Skeleton className="h-10 w-full max-w-sm" />
+        </div>
+
+        {/* Desktop table skeleton */}
+        <div className="hidden md:block">
+          <div className="rounded-md border overflow-hidden">
+            <div className="bg-gray-50 p-4">
+              <div className="flex gap-4">
+                {columns.map((col, i) => (
+                  <Skeleton key={i} className="h-5 flex-1" />
+                ))}
+                <Skeleton className="h-5 w-20" />
+              </div>
+            </div>
+            <div className="p-4 space-y-3">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="flex gap-4 items-center">
+                  {columns.map((col, j) => (
+                    <Skeleton key={j} className="h-12 flex-1" />
+                  ))}
+                  <Skeleton className="h-12 w-20" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile cards skeleton */}
+        <div className="md:hidden space-y-4">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="bg-white p-4 rounded-lg border border-gray-200">
+              <div className="flex justify-between mb-3">
+                <div className="space-y-2">
+                  <Skeleton className="h-6 w-32" />
+                  <Skeleton className="h-4 w-24" />
+                </div>
+                <Skeleton className="h-8 w-8 rounded" />
+              </div>
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-3/4" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="w-full">
+    <div className="w-full space-y-4">
+      {/* Search Input */}
+      <div className="flex items-center gap-2">
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Input
+            placeholder={searchPlaceholder}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-9 pr-9"
+          />
+          {searchTerm && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setSearchTerm('')}
+              className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 p-0 hover:bg-gray-100"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
+        {searchTerm && (
+          <span className="text-sm text-gray-500">
+            {processedData.length} result{processedData.length !== 1 ? 's' : ''}
+          </span>
+        )}
+      </div>
+
       {/* Desktop Table View */}
       <div className="hidden md:block">
         <div className="rounded-md border overflow-hidden">
@@ -100,15 +290,26 @@ export function EntityTable<T extends { id: string }>({
                     key={String(column.key)} 
                     className={`font-semibold text-gray-900 ${column.className || ''}`}
                   >
-                    {column.header}
+                    {column.sortable !== false ? (
+                      <Button
+                        variant="ghost"
+                        onClick={() => handleSort(String(column.key), column.sortable !== false)}
+                        className="h-auto p-0 font-semibold text-gray-900 hover:bg-transparent -ml-4"
+                      >
+                        {column.header}
+                        {getSortIcon(String(column.key), column.sortable !== false)}
+                      </Button>
+                    ) : (
+                      column.header
+                    )}
                   </TableHead>
                 ))}
                 <TableHead className="text-right font-semibold text-gray-900">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {data.map((row) => (
-                <TableRow key={row.id} className="hover:bg-gray-50 border-b">
+              {processedData.map((row) => (
+                <TableRow key={row.id} className="hover:bg-gray-50 border-b transition-colors">
                   {columns.map((column) => (
                     <TableCell key={String(column.key)} className={column.className}>
                       {renderCellValue(row, column)}
@@ -148,10 +349,10 @@ export function EntityTable<T extends { id: string }>({
 
       {/* Mobile Card View */}
       <div className="md:hidden space-y-4">
-        {data.map((row) => (
+        {processedData.map((row) => (
           <div 
             key={row.id} 
-            className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm"
+            className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
           >
             <div className="flex items-start justify-between mb-3">
               <div>
@@ -194,9 +395,17 @@ export function EntityTable<T extends { id: string }>({
         ))}
       </div>
 
-      {data.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-muted-foreground">{emptyMessage}</p>
+      {processedData.length === 0 && !isLoading && (
+        <div className="text-center py-12 border rounded-lg bg-gray-50">
+          <p className="text-muted-foreground">
+            {searchTerm ? (
+              <>
+                No results found for <span className="font-semibold">&quot;{searchTerm}&quot;</span>
+              </>
+            ) : (
+              emptyMessage
+            )}
+          </p>
         </div>
       )}
 
