@@ -13,65 +13,100 @@ interface RowShipTableProps {
   onImport: (rows: RowShipFormData[]) => void;
 }
 
-// Define column configuration for Ship measurements
+// Define column configuration for Ship hydrostatic measurements
 const columns: ColumnConfig[] = [
-  { key: 'value1', label: 'V1', excelHeader: 'Value 1' },
-  { key: 'value2', label: 'V2', excelHeader: 'Value 2' },
-  { key: 'value3', label: 'V3', excelHeader: 'Value 3' },
-  { key: 'value4', label: 'V4', excelHeader: 'Value 4' },
-  { key: 'value5', label: 'V5', excelHeader: 'Value 5' },
-  { key: 'value6', label: 'V6', excelHeader: 'Value 6' },
-  { key: 'value7', label: 'V7', excelHeader: 'Value 7' },
-  { key: 'value8', label: 'V8', excelHeader: 'Value 8' },
-  { key: 'value9', label: 'V9', excelHeader: 'Value 9' },
-  { key: 'value10', label: 'V10', excelHeader: 'Value 10' },
-  { key: 'value11', label: 'V11', excelHeader: 'Value 11' },
+  { key: 'draft',        label: 'Draft (m)',        excelHeader: 'Draft' },
+  { key: 'displacement', label: 'Disp (TM)',        excelHeader: 'Displacement' },
+  { key: 'wl_length',    label: 'WL Len (m)',       excelHeader: 'WL Length' },
+  { key: 'wl_beam',      label: 'WL Beam (m)',      excelHeader: 'WL Beam' },
+  { key: 'wetted_area',  label: 'Wet Area (m²)',    excelHeader: 'Wetted Area' },
+  { key: 'waterpl_area', label: 'WP Area (m²)',     excelHeader: 'Waterplane Area' },
+  { key: 'cp',           label: 'Cp',               excelHeader: 'Cp' },
+  { key: 'cb',           label: 'Cb',               excelHeader: 'Cb' },
+  { key: 'cm',           label: 'Cm',               excelHeader: 'Cm' },
+  { key: 'cwp',          label: 'Cwp',              excelHeader: 'Cwp' },
+  { key: 'lcb',          label: 'LCB (m)',          excelHeader: 'LCB' },
+  { key: 'lcf',          label: 'LCF (m)',          excelHeader: 'LCF' },
+  { key: 'kb',           label: 'KB (m)',           excelHeader: 'KB' },
+  { key: 'bmt',          label: 'BMt (m)',          excelHeader: 'BMt' },
+  { key: 'bml',          label: 'BML (m)',          excelHeader: 'BML' },
+  { key: 'gmt',          label: 'GMt (m)',          excelHeader: 'GMt' },
+  { key: 'gml',          label: 'GML (m)',          excelHeader: 'GML' },
+  { key: 'kmt',          label: 'KMt (m)',          excelHeader: 'KMt' },
+  { key: 'kml',          label: 'KML (m)',          excelHeader: 'KML' },
+  { key: 'tpc',          label: 'TPC (TM/cm)',      excelHeader: 'TPC' },
+  { key: 'mtc',          label: 'MTC (TM·m)',       excelHeader: 'MTC' },
+  { key: 'rm_at_1deg',   label: 'RM@1° (TM·m)',    excelHeader: 'RM at 1deg' },
 ];
 
 // Zod schema for validation
 const RowShipFormDataSchema = z.object({
-  value1: z.number(),
-  value2: z.number(),
-  value3: z.number(),
-  value4: z.number(),
-  value5: z.number(),
-  value6: z.number(),
-  value7: z.number(),
-  value8: z.number(),
-  value9: z.number(),
-  value10: z.number(),
-  value11: z.number(),
+  draft:        z.number(),
+  displacement: z.number(),
+  wl_length:    z.number(),
+  wl_beam:      z.number(),
+  wetted_area:  z.number(),
+  waterpl_area: z.number(),
+  cp:           z.number(),
+  cb:           z.number(),
+  cm:           z.number(),
+  cwp:          z.number(),
+  lcb:          z.number(),
+  lcf:          z.number(),
+  kb:           z.number(),
+  bmt:          z.number(),
+  bml:          z.number(),
+  gmt:          z.number(),
+  gml:          z.number(),
+  kmt:          z.number(),
+  kml:          z.number(),
+  tpc:          z.number(),
+  mtc:          z.number(),
+  rm_at_1deg:   z.number(),
 });
 
 // Column mapping for Excel import (maps schema keys to possible Excel column names)
 const columnMapping: Record<string, string[]> = {
-  value1: ['Value 1', 'value1', 'V1'],
-  value2: ['Value 2', 'value2', 'V2'],
-  value3: ['Value 3', 'value3', 'V3'],
-  value4: ['Value 4', 'value4', 'V4'],
-  value5: ['Value 5', 'value5', 'V5'],
-  value6: ['Value 6', 'value6', 'V6'],
-  value7: ['Value 7', 'value7', 'V7'],
-  value8: ['Value 8', 'value8', 'V8'],
-  value9: ['Value 9', 'value9', 'V9'],
-  value10: ['Value 10', 'value10', 'V10'],
-  value11: ['Value 11', 'value11', 'V11'],
+  draft:        ['Draft', 'draft', 'T'],
+  displacement: ['Displacement', 'displacement', 'Disp'],
+  wl_length:    ['WL Length', 'wl_length', 'WL Len'],
+  wl_beam:      ['WL Beam', 'wl_beam'],
+  wetted_area:  ['Wetted Area', 'wetted_area', 'Wet Area'],
+  waterpl_area: ['Waterplane Area', 'waterpl_area', 'WP Area'],
+  cp:           ['Cp', 'cp', 'CP'],
+  cb:           ['Cb', 'cb', 'CB'],
+  cm:           ['Cm', 'cm', 'CM'],
+  cwp:          ['Cwp', 'cwp', 'CWP'],
+  lcb:          ['LCB', 'lcb'],
+  lcf:          ['LCF', 'lcf'],
+  kb:           ['KB', 'kb'],
+  bmt:          ['BMt', 'bmt', 'BMT'],
+  bml:          ['BML', 'bml'],
+  gmt:          ['GMt', 'gmt', 'GMT'],
+  gml:          ['GML', 'gml'],
+  kmt:          ['KMt', 'kmt', 'KMT'],
+  kml:          ['KML', 'kml'],
+  tpc:          ['TPC', 'tpc'],
+  mtc:          ['MTC', 'mtc'],
+  rm_at_1deg:   ['RM at 1deg', 'rm_at_1deg', 'RM@1°', 'RM at 1°'],
 };
 
 export function RowShipTable({ data, onAdd, onUpdate, onDelete, onImport }: RowShipTableProps) {
   return (
-    <MeasurementTable<RowShip, RowShipFormData>
-      data={data}
-      columns={columns}
-      title="Ship Measurements"
-      description="Manage ship measurement data"
-      onAdd={onAdd}
-      onUpdate={onUpdate}
-      onDelete={onDelete}
-      onImport={onImport}
-      excelExportFilename="rowship-data.xlsx"
-      zodSchema={RowShipFormDataSchema}
-      columnMapping={columnMapping}
-    />
+    <div className="w-full overflow-x-auto">
+      <MeasurementTable<RowShip, RowShipFormData>
+        data={data}
+        columns={columns}
+        title="Ship Hydrostatic Data"
+        description="Manage ship hydrostatic measurement data"
+        onAdd={onAdd}
+        onUpdate={onUpdate}
+        onDelete={onDelete}
+        onImport={onImport}
+        excelExportFilename="ship-hydrostatics.xlsx"
+        zodSchema={RowShipFormDataSchema}
+        columnMapping={columnMapping}
+      />
+    </div>
   );
 }

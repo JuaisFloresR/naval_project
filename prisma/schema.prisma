@@ -15,18 +15,18 @@ datasource db {
 }
 
 model Ship {
-  id        String      @id @default(uuid())
-  name      String
-  type      String
-  length    Decimal     @db.Decimal(10,2)
-  width    Decimal     @db.Decimal(10,2)
-  height    Decimal     @db.Decimal(10,2)
+  id          String   @id @default(uuid())
+  name        String
+  type        String
+  length      Decimal  @db.Decimal(10, 2)
+  width       Decimal  @db.Decimal(10, 2)
+  height      Decimal  @db.Decimal(10, 2)
   description String
-  status    String  @default("ACTIVE")
-  createdAt DateTime    @default(now())
+  status      String   @default("ACTIVE")
+  createdAt   DateTime @default(now())
 
-  parts     Part[]
-  rows      RowShip[]
+  parts Part[]
+  rows  RowShip[]
 }
 
 /// Possible statuses for a Ship
@@ -37,29 +37,51 @@ enum ShipStatus {
 }
 
 model RowShip {
-  id        String   @id @default(uuid())
+  id           String  @id @default(uuid())
   /// Measurement 1 (define actual meaning)
-  value1    Decimal
+  draft        Decimal // (m)
   /// Measurement 2
-  value2    Decimal
+  displacement Decimal // (TM)
   /// Measurement 3
-  value3    Decimal
+  wl_length    Decimal //  (m)
   /// Measurement 4
-  value4    Decimal
+  wl_beam      Decimal // (m)
   /// Measurement 5
-  value5    Decimal
+  wetted_area  Decimal // (m2)
   /// Measurement 6
-  value6    Decimal
+  waterpl_area Decimal // (m2)
   /// Measurement 7
-  value7    Decimal
+  cp           Decimal // (-)
   /// Measurement 8
-  value8    Decimal
+  cb           Decimal // (-)
   /// Measurement 9
-  value9    Decimal
+  cm           Decimal // (-)
   /// Measurement 10
-  value10   Decimal
+  cwp          Decimal // (-)
   /// Measurement 11
-  value11   Decimal
+  lcb          Decimal // (m)
+  /// Measurement 13
+  lcf          Decimal // (m)
+  /// Measurement 14
+  kb           Decimal // (m)
+  /// Measurement 15
+  bmt          Decimal // (m)
+  /// Measurement 16
+  bml          Decimal // (m)
+  /// Measurement 17
+  gmt          Decimal // (m)
+  /// Measurement 18
+  gml          Decimal // (m)
+  /// Measurement 19
+  kmt          Decimal // (m)
+  /// Measurement 20
+  kml          Decimal // (m)
+  /// Measurement 21
+  tpc          Decimal // (TM/cm)
+  /// Measurement 22
+  mtc          Decimal // TM-m
+  //Measurement 23
+  rm_at_1deg   Decimal //TM-m
 
   createdAt DateTime @default(now())
   shipId    String
@@ -67,34 +89,32 @@ model RowShip {
 }
 
 model Part {
-  id        String   @id @default(uuid())
-  name      String
+  id          String    @id @default(uuid())
+  name        String
   description String
-  shipId    String
-  ship      Ship     @relation(fields: [shipId], references: [id])
-  rows      RowPart[]
+  shipId      String
+  ship        Ship      @relation(fields: [shipId], references: [id])
+  rows        RowPart[]
 }
 
 model RowPart {
-  id        String   @id @default(uuid())
+  id     String  @id @default(uuid())
   /// Measurement 1 (define actual meaning)
-  value1    Decimal
+  value1 Decimal
   /// Measurement 2
-  value2    Decimal
+  value2 Decimal
   /// Measurement 3
-  value3    Decimal
+  value3 Decimal
   /// Measurement 4
-  value4    Decimal
+  value4 Decimal
   /// Measurement 5
-  value5    Decimal
+  value5 Decimal
   /// Measurement 6
-  value6    Decimal
+  value6 Decimal
   /// Measurement 7
-  value7    Decimal
+  value7 Decimal
 
   createdAt DateTime @default(now())
   partId    String
   part      Part     @relation(fields: [partId], references: [id])
 }
-
-
