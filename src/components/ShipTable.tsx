@@ -48,8 +48,21 @@ const columns: EntityColumnConfig<Ship>[] = [
     sortable: true
   },
   { 
-    key: 'yearBuilt', 
-    header: 'Year Built',
+    key: 'status', 
+    header: 'Status',
+    render: (ship) => {
+      const colors: Record<string, string> = {
+        'ACTIVE': 'bg-green-100 text-green-800',
+        'INACTIVE': 'bg-gray-100 text-gray-800',
+        'RETIRED': 'bg-red-100 text-red-800',
+        'UNDER_REPAIR': 'bg-yellow-100 text-yellow-800',
+      };
+      return (
+        <Badge className={colors[ship.status] || 'bg-gray-100 text-gray-800'} variant="secondary">
+          {ship.status.replace('_', ' ')}
+        </Badge>
+      );
+    },
     sortable: true
   },
 ];
@@ -65,8 +78,8 @@ const mobileFields: MobileFieldConfig<Ship>[] = [
     )
   },
   {
-    label: 'Year Built',
-    render: (ship) => ship.yearBuilt?.toString() || 'N/A'
+    label: 'Status',
+    render: (ship) => ship.status.replace('_', ' ')
   },
 ];
 
@@ -81,7 +94,7 @@ export function ShipTable({ data, onDelete, isLoading }: ShipTableProps) {
       entityTypeName="Ship"
       emptyMessage="No ships found. Add some ships to get started!"
       isLoading={isLoading}
-      searchPlaceholder="Search ships by name, type, or year..."
+      searchPlaceholder="Search ships by name or type..."
       onDelete={onDelete}
     />
   );

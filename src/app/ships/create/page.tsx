@@ -30,20 +30,17 @@ export default function CreateShipPage() {
       rows: rows,
     };
 
-    // Placeholder for backend integration - replace with actual Prisma create
-    // e.g., await prisma.ship.create({ data: shipData });
-
     try {
-      // Simulate API call
-      await new Promise((resolve, reject) => {
-        setTimeout(() => {
-          if (Math.random() > 0.1) { // 90% success rate for demo
-            resolve('Ship created successfully');
-          } else {
-            reject(new Error('Failed to create ship. Please try again.'));
-          }
-        }, 1000);
+      const res = await fetch('/api/ships', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(shipData)
       });
+
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || 'Failed to create ship');
+      }
 
       setShowSuccess(true);
     } catch (error) {

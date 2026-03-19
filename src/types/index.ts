@@ -24,12 +24,11 @@ export interface Ship {
   width: number;
   height: number;
   description: string;
-  status: 'ACTIVE' | 'RETIRED' | 'UNDER_REPAIR';
+  status: 'ACTIVE' | 'INACTIVE' | 'RETIRED' | 'UNDER_REPAIR';
   createdAt: Date;
-  yearBuilt?: number; 
 }
 
-export type ShipStatus = 'ACTIVE' | 'RETIRED' | 'UNDER_REPAIR';
+export type ShipStatus = 'ACTIVE' | 'INACTIVE' | 'RETIRED' | 'UNDER_REPAIR';
 
 export interface ShipFormData {
   name: string;
@@ -39,7 +38,6 @@ export interface ShipFormData {
   height: number;
   description?: string;
   status?: ShipStatus;
-  yearBuilt?: number;
   rows?: RowShip[];
 }
 

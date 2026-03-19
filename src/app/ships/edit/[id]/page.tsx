@@ -14,55 +14,8 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Ship, ShipFormData, RowShip, RowShipFormData, ShipStatus } from '@/types';
+import { Ship, ShipFormData, RowShip, RowShipFormData } from '@/types';
 
-// Sample ship data (same as in the list page)
-const sampleShips: Ship[] = [
-  {
-    id: '1',
-    name: 'HMS Victory',
-    type: 'Battleship',
-    length: 69.6,
-    width: 15.8,
-    height: 20.5,
-    description: 'Historic British warship famous for the Battle of Trafalgar.',
-    status: 'RETIRED',
-    createdAt: new Date('1765-05-07'),
-  },
-  {
-    id: '2',
-    name: 'USS Enterprise',
-    type: 'Aircraft Carrier',
-    length: 342.0,
-    width: 78.0,
-    height: 76.0,
-    description: 'The world\'s first nuclear-powered aircraft carrier.',
-    status: 'RETIRED',
-    createdAt: new Date('1961-11-25'),
-  },
-  {
-    id: '3',
-    name: 'Queen Mary 2',
-    type: 'Cruise Ship',
-    length: 345.0,
-    width: 45.0,
-    height: 72.0,
-    description: 'Transatlantic ocean liner and cruise ship.',
-    status: 'ACTIVE',
-    createdAt: new Date('2004-01-12'),
-  },
-  {
-    id: '4',
-    name: 'Ever Given',
-    type: 'Container Ship',
-    length: 400.0,
-    width: 59.0,
-    height: 32.9,
-    description: 'Container ship that blocked the Suez Canal in 2021.',
-    status: 'ACTIVE',
-    createdAt: new Date('2018-07-01'),
-  },
-];
 
 export default function EditShipPage() {
   const params = useParams();
@@ -75,51 +28,24 @@ export default function EditShipPage() {
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
-    // Simulate fetching ship data and its rows
-    const shipId = params.id as string;
-    const foundShip = sampleShips.find(s => s.id === shipId);
+    const fetchShip = async () => {
+      try {
+        const res = await fetch(`/api/ships/${params.id}`);
+        if (!res.ok) {
+          if (res.status === 404) setShip(null);
+          throw new Error('Failed to fetch ship');
+        }
+        const data = await res.json();
+        setShip(data);
+        setRows(data.rows || []);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    // Sample row data for demonstration
-    const sampleRows: RowShip[] = [
-      {
-        id: 'row-1',
-        value1: 10.5,
-        value2: 20.3,
-        value3: 15.7,
-        value4: 8.9,
-        value5: 12.1,
-        value6: 25.4,
-        value7: 18.6,
-        value8: 9.2,
-        value9: 14.8,
-        value10: 22.0,
-        value11: 16.3,
-        createdAt: new Date('2024-01-15'),
-        shipId: shipId,
-      },
-      {
-        id: 'row-2',
-        value1: 11.2,
-        value2: 19.8,
-        value3: 16.1,
-        value4: 9.3,
-        value5: 13.5,
-        value6: 24.9,
-        value7: 17.2,
-        value8: 10.6,
-        value9: 15.4,
-        value10: 21.7,
-        value11: 17.8,
-        createdAt: new Date('2024-01-20'),
-        shipId: shipId,
-      },
-    ];
-
-    setTimeout(() => {
-      setShip(foundShip || null);
-      setRows(foundShip ? sampleRows : []);
-      setLoading(false);
-    }, 300);
+    fetchShip();
   }, [params.id]);
 
   const handleSubmit = async (data: ShipFormData) => {
@@ -129,20 +55,17 @@ export default function EditShipPage() {
       rows: rows,
     };
 
-    // Placeholder for backend integration - replace with actual Prisma update
-    // e.g., await prisma.ship.update({ where: { id: params.id }, data: shipData });
-
     try {
-      // Simulate API call
-      await new Promise((resolve, reject) => {
-        setTimeout(() => {
-          if (Math.random() > 0.1) { // 90% success rate for demo
-            resolve('Ship updated successfully');
-          } else {
-            reject(new Error('Failed to update ship. Please try again.'));
-          }
-        }, 1000);
+      const res = await fetch(`/api/ships/${params.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(shipData)
       });
+
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || 'Failed to update ship');
+      }
 
       setShowSuccess(true);
     } catch (error) {

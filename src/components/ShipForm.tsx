@@ -24,7 +24,7 @@ export default function ShipForm({ initialData, onSubmit, isEditing = false }: S
     width: z.coerce.number().min(0.01, 'Width must be greater than 0'),
     height: z.coerce.number().min(0.01, 'Height must be greater than 0'),
     description: z.string().max(1000, 'Description must be less than 1000 characters').optional(),
-    status: z.enum(['ACTIVE', 'RETIRED', 'UNDER_REPAIR']).optional(),
+    status: z.enum(['ACTIVE', 'INACTIVE', 'RETIRED', 'UNDER_REPAIR']).optional(),
   }).refine((data) => !isEditing || data.status !== undefined, {
     message: 'Status is required when editing',
     path: ['status'],
@@ -180,6 +180,7 @@ export default function ShipForm({ initialData, onSubmit, isEditing = false }: S
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="ACTIVE">Active</SelectItem>
+                  <SelectItem value="INACTIVE">Inactive</SelectItem>
                   <SelectItem value="RETIRED">Retired</SelectItem>
                   <SelectItem value="UNDER_REPAIR">Under Repair</SelectItem>
                 </SelectContent>

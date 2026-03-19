@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@/generated/prisma';
 
 // 1. Definimos una variable global para evitar múltiples instancias en desarrollo (Singleton)
 const globalForPrisma = global as unknown as { prisma: PrismaClient };

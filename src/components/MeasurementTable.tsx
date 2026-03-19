@@ -199,7 +199,7 @@ export function MeasurementTable<TRow extends { id: string; createdAt: Date }, T
         />
       );
     }
-    return <span className="text-gray-900">{(value ?? 0).toFixed(2)}</span>;
+    return <span className="text-gray-900">{Number(value ?? 0).toFixed(2)}</span>;
   };
 
   return (
@@ -377,7 +377,7 @@ export function MeasurementTable<TRow extends { id: string; createdAt: Date }, T
                           return (
                             <div key={col.key} className="text-center p-1 bg-gray-50 rounded">
                               <span className="text-gray-600">{col.label}:</span>
-                              <span className="font-medium ml-1">{(value ?? 0).toFixed(1)}</span>
+                              <span className="font-medium ml-1">{Number(value ?? 0).toFixed(1)}</span>
                             </div>
                           );
                         })}
@@ -434,7 +434,7 @@ export function MeasurementTable<TRow extends { id: string; createdAt: Date }, T
                 <div className="flex-1 min-w-0">
                   <h4 className="font-semibold text-gray-900 text-sm sm:text-base truncate">ID: {row.id}</h4>
                   <p className="text-xs sm:text-sm text-gray-600 mt-1">
-                    Created: {row.createdAt.toLocaleDateString()}
+                    Created: {new Date(row.createdAt).toLocaleDateString()}
                   </p>
                 </div>
                 <DropdownMenu>
@@ -503,7 +503,7 @@ export function MeasurementTable<TRow extends { id: string; createdAt: Date }, T
                     return (
                       <div key={col.key} className="text-center p-2 sm:p-3 bg-gray-50 rounded-lg border border-gray-100">
                         <span className="text-xs text-gray-600 font-medium block">{col.label}</span>
-                        <p className="font-semibold text-gray-900 mt-1 text-sm sm:text-base">{(value ?? 0).toFixed(2)}</p>
+                        <p className="font-semibold text-gray-900 mt-1 text-sm sm:text-base">{Number(value ?? 0).toFixed(2)}</p>
                       </div>
                     );
                   })}

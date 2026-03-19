@@ -1,69 +1,44 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
 import { ShipTable } from '@/components/ShipTable';
 import { Button } from '@/components/ui/button';
 import { Ship } from '@/types';
 
-// Sample ship data
-const initialShips: Ship[] = [
-  {
-    id: '1',
-    name: 'HMS Victory',
-    type: 'Battleship',
-    length: 69.6,
-    width: 16.2,
-    height: 20.0,
-    description: 'Historic British warship famous for the Battle of Trafalgar',
-    status: 'RETIRED' as const,
-    createdAt: new Date(1765, 0, 1),
-    yearBuilt: 1765,
-  },
-  {
-    id: '2',
-    name: 'USS Enterprise',
-    type: 'Aircraft Carrier',
-    length: 342.0,
-    width: 77.7,
-    height: 37.0,
-    description: 'Iconic US Navy aircraft carrier from the Cold War era',
-    status: 'RETIRED' as const,
-    createdAt: new Date(1961, 0, 1),
-    yearBuilt: 1961,
-  },
-  {
-    id: '3',
-    name: 'Queen Mary 2',
-    type: 'Cruise Ship',
-    length: 345.0,
-    width: 45.0,
-    height: 72.0,
-    description: 'Luxury transatlantic ocean liner operated by Cunard',
-    status: 'ACTIVE' as const,
-    createdAt: new Date(2004, 0, 1),
-    yearBuilt: 2004,
-  },
-  {
-    id: '4',
-    name: 'Ever Given',
-    type: 'Container Ship',
-    length: 400.0,
-    width: 59.0,
-    height: 32.9,
-    description: 'One of the largest container ships in the world',
-    status: 'ACTIVE' as const,
-    createdAt: new Date(2018, 0, 1),
-    yearBuilt: 2018,
-  },
-];
+
 
 export default function ShipsPage() {
-  const [ships, setShips] = useState<Ship[]>(initialShips);
+  const [ships, setShips] = useState<Ship[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const handleDeleteShip = (id: string) => {
-    setShips(ships.filter(ship => ship.id !== id));
+  const fetchShips = async () => {
+    try {
+      setIsLoading(true);
+      const res = await fetch('/api/ships');
+      if (!res.ok) throw new Error('Failed to fetch ships');
+      const data = await res.json();
+      setShips(data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchShips();
+  }, []);
+
+  const handleDeleteShip = async (id: string) => {
+    try {
+      const res = await fetch(`/api/ships/${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Failed to delete ship');
+      setShips(ships.filter(ship => ship.id !== id));
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -95,7 +70,7 @@ export default function ShipsPage() {
             </h2>
           </div>
           <div className="p-6">
-            <ShipTable data={ships} onDelete={handleDeleteShip} />
+            <ShipTable data={ships} onDelete={handleDeleteShip} isLoading={isLoading} />
           </div>
         </div>
       </div>
