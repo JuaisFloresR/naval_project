@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../src/generated/prisma"
@@ -15,21 +9,23 @@ datasource db {
 }
 
 model Ship {
-  id          String   @id @default(uuid())
+  id          String     @id @default(uuid())
   name        String
   type        String
-  length      Decimal  @db.Decimal(10, 2)
-  width       Decimal  @db.Decimal(10, 2)
-  height      Decimal  @db.Decimal(10, 2)
+  length      Decimal    @db.Decimal(10, 2)
+  width       Decimal    @db.Decimal(10, 2)
+  height      Decimal    @db.Decimal(10, 2)
   description String
-  status      String   @default("ACTIVE")
-  createdAt   DateTime @default(now())
+  status      ShipStatus @default(ACTIVE)
+  createdAt   DateTime   @default(now())
 
-  parts Part[]
-  rows  RowShip[]
+  // Relación activa
+  rows        RowShip[]
+
+  // Relación comentada (para evitar error de validación)
+  // parts Part[]
 }
 
-/// Possible statuses for a Ship
 enum ShipStatus {
   ACTIVE
   RETIRED
@@ -37,84 +33,57 @@ enum ShipStatus {
 }
 
 model RowShip {
-  id           String  @id @default(uuid())
-  /// Measurement 1 (define actual meaning)
-  draft        Decimal // (m)
-  /// Measurement 2
-  displacement Decimal // (TM)
-  /// Measurement 3
-  wl_length    Decimal //  (m)
-  /// Measurement 4
-  wl_beam      Decimal // (m)
-  /// Measurement 5
-  wetted_area  Decimal // (m2)
-  /// Measurement 6
-  waterpl_area Decimal // (m2)
-  /// Measurement 7
-  cp           Decimal // (-)
-  /// Measurement 8
-  cb           Decimal // (-)
-  /// Measurement 9
-  cm           Decimal // (-)
-  /// Measurement 10
-  cwp          Decimal // (-)
-  /// Measurement 11
-  lcb          Decimal // (m)
-  /// Measurement 13
-  lcf          Decimal // (m)
-  /// Measurement 14
-  kb           Decimal // (m)
-  /// Measurement 15
-  bmt          Decimal // (m)
-  /// Measurement 16
-  bml          Decimal // (m)
-  /// Measurement 17
-  gmt          Decimal // (m)
-  /// Measurement 18
-  gml          Decimal // (m)
-  /// Measurement 19
-  kmt          Decimal // (m)
-  /// Measurement 20
-  kml          Decimal // (m)
-  /// Measurement 21
-  tpc          Decimal // (TM/cm)
-  /// Measurement 22
-  mtc          Decimal // TM-m
-  //Measurement 23
-  rm_at_1deg   Decimal //TM-m
+  id           String   @id @default(uuid())
+  draft        Decimal  // (m)
+  displacement Decimal  // (TM)
+  wl_length    Decimal  // (m)
+  wl_beam      Decimal  // (m)
+  wetted_area  Decimal  // (m2)
+  waterpl_area Decimal  // (m2)
+  cp           Decimal  // (-)
+  cb           Decimal  // (-)
+  cm           Decimal  // (-)
+  cwp          Decimal  // (-)
+  lcb          Decimal  // (m)
+  lcf          Decimal  // (m)
+  kb           Decimal  // (m)
+  bmt          Decimal  // (m)
+  bml          Decimal  // (m)
+  gmt          Decimal  // (m)
+  gml          Decimal  // (m)
+  kmt          Decimal  // (m)
+  kml          Decimal  // (m)
+  tpc          Decimal  // (TM/cm)
+  mtc          Decimal  // TM-m
+  rm_at_1deg   Decimal  // TM-m
 
-  createdAt DateTime @default(now())
-  shipId    String
-  ship      Ship     @relation(fields: [shipId], references: [id])
+  createdAt    DateTime @default(now())
+  shipId       String
+  ship         Ship     @relation(fields: [shipId], references: [id])
+
+  @@index([shipId])
 }
 
-model Part {
-  id          String    @id @default(uuid())
-  name        String
-  description String
-  shipId      String
-  ship        Ship      @relation(fields: [shipId], references: [id])
-  rows        RowPart[]
-}
+// Modelos comentados para uso futuro
+// model Part {
+//   id          String    @id @default(uuid())
+//   name        String
+//   description String
+//   shipId      String
+//   ship        Ship      @relation(fields: [shipId], references: [id])
+//   rows        RowPart[]
+// }
 
-model RowPart {
-  id     String  @id @default(uuid())
-  /// Measurement 1 (define actual meaning)
-  value1 Decimal
-  /// Measurement 2
-  value2 Decimal
-  /// Measurement 3
-  value3 Decimal
-  /// Measurement 4
-  value4 Decimal
-  /// Measurement 5
-  value5 Decimal
-  /// Measurement 6
-  value6 Decimal
-  /// Measurement 7
-  value7 Decimal
-
-  createdAt DateTime @default(now())
-  partId    String
-  part      Part     @relation(fields: [partId], references: [id])
-}
+// model RowPart {
+//   id      String  @id @default(uuid())
+//   value1  Decimal
+//   value2  Decimal
+//   value3  Decimal
+//   value4  Decimal
+//   value5  Decimal
+//   value6  Decimal
+//   value7  Decimal
+//   createdAt DateTime @default(now())
+//   partId    String
+//   part      Part     @relation(fields: [partId], references: [id])
+// }
