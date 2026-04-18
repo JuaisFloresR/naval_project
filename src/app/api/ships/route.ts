@@ -31,11 +31,12 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json() as ShipFormData;
-    const { rows, status, ...shipData } = body;
+    const { rows, status, description, ...shipData } = body;
 
     const ship = await prisma.ship.create({
       data: {
         ...shipData,
+        description: description ?? '',
         status: status || 'ACTIVE',
         rows: {
           create: rows?.map((row: RowShip) => {

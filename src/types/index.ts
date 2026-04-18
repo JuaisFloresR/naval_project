@@ -134,3 +134,48 @@ export interface RowPartFormData {
   value6: number;
   value7: number;
 }
+
+// ─── Interpolation Module ────────────────────────────────────────────────────
+
+export interface InterpolationDetail {
+  id: string;
+  draft: number;        // (m)
+  displacement: number; // (TM)
+  wl_length: number;    // (m)
+  wl_beam: number;      // (m)
+  wetted_area: number;  // (m²)
+  waterpl_area: number; // (m²)
+  cp: number;           // (-)
+  cb: number;           // (-)
+  cm: number;           // (-)
+  cwp: number;          // (-)
+  lcb: number;          // (m)
+  lcf: number;          // (m)
+  kb: number;           // (m)
+  bmt: number;          // (m)
+  bml: number;          // (m)
+  gmt: number;          // (m)
+  gml: number;          // (m)
+  kmt: number;          // (m)
+  kml: number;          // (m)
+  tpc: number;          // (TM/cm)
+  mtc: number;          // (TM·m)
+  rm_at_1deg: number;   // (TM·m)
+  createdAt: Date;
+  interpolationId: string;
+}
+
+export interface Interpolation {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  shipId: string;
+  ship?: { id: string; name: string };
+  details?: InterpolationDetail[];
+  _count?: { details: number };
+}
+
+export interface InterpolationFormData {
+  shipId: string;
+  details?: Omit<InterpolationDetail, 'id' | 'createdAt' | 'interpolationId'>[];
+}

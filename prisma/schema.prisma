@@ -20,7 +20,8 @@ model Ship {
   createdAt   DateTime   @default(now())
 
   // Relación activa
-  rows        RowShip[]
+  rows           RowShip[]
+  interpolations Interpolation[]
 
   // Relación comentada (para evitar error de validación)
   // parts Part[]
@@ -88,3 +89,51 @@ model RowShip {
 //   partId    String
 //   part      Part     @relation(fields: [partId], references: [id])
 // }
+
+// ─── Interpolation Module ───────────────────────────────────────────────────
+
+model Interpolation {
+  id        String               @id @default(uuid())
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+
+  shipId  String
+  ship    Ship                   @relation(fields: [shipId], references: [id])
+  details InterpolationDetail[]
+
+  @@index([shipId])
+}
+
+model InterpolationDetail {
+  id           String @id @default(uuid())
+
+  // Same data fields as RowShip
+  draft        Decimal // (m)
+  displacement Decimal // (TM)
+  wl_length    Decimal // (m)
+  wl_beam      Decimal // (m)
+  wetted_area  Decimal // (m2)
+  waterpl_area Decimal // (m2)
+  cp           Decimal // (-)
+  cb           Decimal // (-)
+  cm           Decimal // (-)
+  cwp          Decimal // (-)
+  lcb          Decimal // (m)
+  lcf          Decimal // (m)
+  kb           Decimal // (m)
+  bmt          Decimal // (m)
+  bml          Decimal // (m)
+  gmt          Decimal // (m)
+  gml          Decimal // (m)
+  kmt          Decimal // (m)
+  kml          Decimal // (m)
+  tpc          Decimal // (TM/cm)
+  mtc          Decimal // TM-m
+  rm_at_1deg   Decimal // TM-m
+
+  createdAt       DateTime      @default(now())
+  interpolationId String
+  interpolation   Interpolation @relation(fields: [interpolationId], references: [id])
+
+  @@index([interpolationId])
+}

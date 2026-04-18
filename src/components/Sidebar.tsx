@@ -1,6 +1,6 @@
 'use client';
 
-import { Users, Home, Settings, Ship, Component, Menu, X, User } from 'lucide-react';
+import { Users, Home, Settings, Ship, Component, Menu, X, User, TrendingUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useSidebar } from '@/contexts/SidebarContext';
 import Link from 'next/link';
@@ -15,6 +15,7 @@ const navigation = [
   { name: "Users", icon: Users, href: "/users" },
   { name: "Ships", icon: Ship, href: "/ships" },
   { name: "Parts", icon: Component, href: "/parts" },
+  { name: "Interpolation", icon: TrendingUp, href: "/interpolation" },
   { name: "Settings", icon: Settings, href: "/settings" },
 ];
 
