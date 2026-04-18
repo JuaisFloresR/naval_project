@@ -23,6 +23,7 @@ export default function EditShipPage() {
   const [ship, setShip] = useState<Ship | null>(null);
   const [rows, setRows] = useState<RowShip[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [showError, setShowError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -49,24 +50,17 @@ export default function EditShipPage() {
   }, [params.id]);
 
   const handleSubmit = async (data: ShipFormData) => {
-    // Include rows in the form data
-    const shipData = {
-      ...data,
-      rows: rows,
-    };
-
+    const shipData = { ...data, rows };
     try {
       const res = await fetch(`/api/ships/${params.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(shipData)
+        body: JSON.stringify(shipData),
       });
-
       if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.error || 'Failed to update ship');
+        const err = await res.json();
+        throw new Error(err.error || 'Failed to update ship');
       }
-
       setShowSuccess(true);
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : 'An unexpected error occurred');
@@ -92,8 +86,34 @@ export default function EditShipPage() {
     ));
   };
 
-  const handleDeleteRow = (id: string) => {
-    setRows(rows.filter(row => row.id !== id));
+  // UUID v4 regex — rows loaded from the DB have real UUIDs;
+  // rows added in the UI before saving have fake ids like "row-1234567890".
+  const isRealDbId = (rowId: string) =>
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(rowId);
+
+  const handleDeleteRow = async (id: string) => {
+    if (isDeleting) return;           // prevent double-clicks
+
+    if (isRealDbId(id)) {
+      // Row exists in the DB → delete it immediately
+      setIsDeleting(true);
+      try {
+        const res = await fetch(`/api/rows/${id}`, { method: 'DELETE' });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.error || 'Failed to delete row');
+        }
+      } catch (error) {
+        setErrorMessage(error instanceof Error ? error.message : 'Failed to delete row');
+        setShowError(true);
+        setIsDeleting(false);
+        return;  // abort — do NOT remove from UI if DB delete failed
+      }
+      setIsDeleting(false);
+    }
+
+    // Remove from UI state (for both real and unsaved rows)
+    setRows((prev) => prev.filter((row) => row.id !== id));
   };
 
   const handleImportRows = (importedRows: RowShipFormData[]) => {

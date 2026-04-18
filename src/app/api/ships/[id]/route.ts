@@ -41,29 +41,53 @@ export async function PUT(
   try {
     const { id } = await params;
     const body = await request.json() as ShipFormData;
-    const { rows, status, ...shipData } = body;
+    const { rows, status, description, ...shipData } = body;
 
-    // Use a transaction to delete old rows and create new ones
+    const incomingRows = rows ?? [];
+
+    // Delete ALL existing rows then recreate from the payload.
+    // This is the safest sync strategy — the payload is the authoritative set.
     const ship = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
-      // Delete existing rows
-      await tx.rowShip.deleteMany({
-        where: { shipId: id }
-      });
+      await tx.rowShip.deleteMany({ where: { shipId: id } });
 
-      // Update ship and create new rows
-      return await tx.ship.update({
+      if (incomingRows.length > 0) {
+        await tx.rowShip.createMany({
+          data: incomingRows.map((row: RowShip) => ({
+            draft:        row.draft,
+            displacement: row.displacement,
+            wl_length:    row.wl_length,
+            wl_beam:      row.wl_beam,
+            wetted_area:  row.wetted_area,
+            waterpl_area: row.waterpl_area,
+            cp:           row.cp,
+            cb:           row.cb,
+            cm:           row.cm,
+            cwp:          row.cwp,
+            lcb:          row.lcb,
+            lcf:          row.lcf,
+            kb:           row.kb,
+            bmt:          row.bmt,
+            bml:          row.bml,
+            gmt:          row.gmt,
+            gml:          row.gml,
+            kmt:          row.kmt,
+            kml:          row.kml,
+            tpc:          row.tpc,
+            mtc:          row.mtc,
+            rm_at_1deg:   row.rm_at_1deg,
+            shipId:       id,
+          })),
+        });
+      }
+
+      return tx.ship.update({
         where: { id },
         data: {
           ...shipData,
+          description: description ?? '',
           status: status || 'ACTIVE',
-          rows: {
-            create: rows?.map((row: RowShip) => {
-              const { draft, displacement, wl_length, wl_beam, wetted_area, waterpl_area, cp, cb, cm, cwp, lcb, lcf, kb, bmt, bml, gmt, gml, kmt, kml, tpc, mtc, rm_at_1deg } = row;
-              return { draft, displacement, wl_length, wl_beam, wetted_area, waterpl_area, cp, cb, cm, cwp, lcb, lcf, kb, bmt, bml, gmt, gml, kmt, kml, tpc, mtc, rm_at_1deg };
-            }) || []
-          }
         },
-        include: { rows: true }
+        include: { rows: { orderBy: { createdAt: 'asc' } } },
       });
     });
 
@@ -73,6 +97,7 @@ export async function PUT(
     return NextResponse.json({ error: 'Failed to update ship' }, { status: 500 });
   }
 }
+
 
 export async function DELETE(
   request: Request,
