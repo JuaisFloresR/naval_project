@@ -45,41 +45,42 @@ export async function PUT(
 
     const incomingRows = rows ?? [];
 
-    // Delete ALL existing rows then recreate from the payload.
-    // This is the safest sync strategy — the payload is the authoritative set.
-    const ship = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
-      await tx.rowShip.deleteMany({ where: { shipId: id } });
+    // Rows loaded from the DB have a standard UUID (8-4-4-4-12 hex).
+    // Rows added in the UI before saving receive fake ids like "row-1234567890".
+    const isRealId = (rowId: string) =>
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(rowId);
 
-      if (incomingRows.length > 0) {
-        await tx.rowShip.createMany({
-          data: incomingRows.map((row: RowShip) => ({
-            draft:        row.draft,
-            displacement: row.displacement,
-            wl_length:    row.wl_length,
-            wl_beam:      row.wl_beam,
-            wetted_area:  row.wetted_area,
-            waterpl_area: row.waterpl_area,
-            cp:           row.cp,
-            cb:           row.cb,
-            cm:           row.cm,
-            cwp:          row.cwp,
-            lcb:          row.lcb,
-            lcf:          row.lcf,
-            kb:           row.kb,
-            bmt:          row.bmt,
-            bml:          row.bml,
-            gmt:          row.gmt,
-            gml:          row.gml,
-            kmt:          row.kmt,
-            kml:          row.kml,
-            tpc:          row.tpc,
-            mtc:          row.mtc,
-            rm_at_1deg:   row.rm_at_1deg,
-            shipId:       id,
-          })),
-        });
+    const ship = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+
+      // NOTE: No orphan-row cleanup here.
+      // Row deletion is handled immediately and atomically by the dedicated
+      // endpoint: DELETE /api/rows/[rowId]
+      // By the time this PUT runs, any removed rows are already gone from the DB.
+
+      // Upsert each row in the payload:
+      //   • Real UUID  → UPDATE in place (preserves id, createdAt, and any FKs)
+      //   • Fake / new → CREATE a fresh record (Prisma generates the UUID)
+      for (const row of incomingRows) {
+        const {
+          draft, displacement, wl_length, wl_beam, wetted_area, waterpl_area,
+          cp, cb, cm, cwp, lcb, lcf, kb, bmt, bml, gmt, gml, kmt, kml,
+          tpc, mtc, rm_at_1deg,
+        } = row;
+
+        const rowData = {
+          draft, displacement, wl_length, wl_beam, wetted_area, waterpl_area,
+          cp, cb, cm, cwp, lcb, lcf, kb, bmt, bml, gmt, gml, kmt, kml,
+          tpc, mtc, rm_at_1deg,
+        };
+
+        if (isRealId(row.id)) {
+          await tx.rowShip.update({ where: { id: row.id }, data: rowData });
+        } else {
+          await tx.rowShip.create({ data: { ...rowData, shipId: id } });
+        }
       }
 
+      // Update the ship's own scalar fields
       return tx.ship.update({
         where: { id },
         data: {
@@ -97,6 +98,7 @@ export async function PUT(
     return NextResponse.json({ error: 'Failed to update ship' }, { status: 500 });
   }
 }
+
 
 
 export async function DELETE(
